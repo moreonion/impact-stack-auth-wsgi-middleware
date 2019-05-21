@@ -12,13 +12,14 @@ class AuthMiddleware:
         self.token_store = token_store
         self.wsgi_app = app.wsgi_app
         app.wsgi_app = self
+        self.cookie_name = app.config.get('AUTH_COOKIE', 'session_uuid')
         secret_key = app.config.get('AUTH_SECRET_KEY', app.config.get('SECRET_KEY'))
         self.signer = itsdangerous.Signer(secret_key)
 
     def get_session_uuid(self, environ):
         """Read the session ID from the Cookie header and validate it."""
         request = BaseRequest(environ)
-        data = request.cookies.get('session_uuid')
+        data = request.cookies.get(self.cookie_name)
         if data:
             try:
                 return self.signer.unsign(data).decode()

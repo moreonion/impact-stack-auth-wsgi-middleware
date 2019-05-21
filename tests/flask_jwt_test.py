@@ -86,7 +86,7 @@ class TestMiddleware:
     def test_get_current_identity(auth_middleware, client):
         """Test that a request with a valid signed session ID gets a 200."""
         signed_uuid = auth_middleware.signer.sign('user1-uuid')
-        client.set_cookie('localhost', 'session_uuid', signed_uuid)
+        client.set_cookie('localhost', auth_middleware.cookie_name, signed_uuid)
         response = client.get('/protected')
         assert response.status_code == 200
         data = json.loads(response.get_data(as_text=True))
