@@ -12,7 +12,7 @@ from flask_jwt import (
     JWT, _default_jwt_payload_handler, current_identity, jwt_required
 )
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware, RedisStore
+from impact_stack.auth_wsgi_middleware import AuthMiddleware
 
 
 @pytest.fixture(scope='class')
@@ -37,6 +37,8 @@ def app(jwt):
     app.debug = True
     app.config['SECRET_KEY'] = 'super-secret'
     app.config['JWT_AUTH_URL_RULE'] = None
+    app.config['AUTH_REDIS_URL'] = 'redis://:password@localhost:6379/0'
+    app.config['AUTH_REDIS_CLIENT_CLASS'] = fakeredis.FakeStrictRedis
 
     jwt.init_app(app)
 
@@ -52,17 +54,12 @@ def app(jwt):
 
 
 @pytest.fixture(scope='class')
-def redis_store():
-    """Create a redis store using a fakeredis client."""
-    return RedisStore.from_url('redis://:password@localhost:6379/0', fakeredis.FakeStrictRedis)
-
-
-@pytest.fixture(scope='class')
-def auth_middleware(app, jwt, redis_store):
+def auth_middleware(app, jwt):
     """Initialize the auth middleware."""
     # pylint: disable=protected-access
-    redis_store ._client.set('user1-uuid', jwt.jwt_encode_callback('user1').decode())
-    return AuthMiddleware(app, redis_store)
+    m = AuthMiddleware.init_app(app)
+    m.token_store._client.set('user1-uuid', jwt.jwt_encode_callback('user1').decode())
+    return m
 
 
 @pytest.fixture
