@@ -3,16 +3,16 @@
 # pylint: disable=redefined-outer-name
 
 import json
-from collections import defaultdict
 from unittest.mock import Mock
 
+import fakeredis
 import pytest
 from flask import Flask, jsonify
 from flask_jwt import (
     JWT, _default_jwt_payload_handler, current_identity, jwt_required
 )
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware
+from impact_stack.auth_wsgi_middleware import AuthMiddleware, RedisStore
 
 
 @pytest.fixture(scope='class')
@@ -52,11 +52,17 @@ def app(jwt):
 
 
 @pytest.fixture(scope='class')
-def auth_middleware(app, jwt):
+def redis_store():
+    """Create a redis store using a fakeredis client."""
+    return RedisStore.from_url('redis://:password@localhost:6379/0', fakeredis.FakeStrictRedis)
+
+
+@pytest.fixture(scope='class')
+def auth_middleware(app, jwt, redis_store):
     """Initialize the auth middleware."""
-    store = defaultdict(lambda: None)
-    store['user1-uuid'] = jwt.jwt_encode_callback('user1').decode()
-    return AuthMiddleware(app, store)
+    # pylint: disable=protected-access
+    redis_store ._client.set('user1-uuid', jwt.jwt_encode_callback('user1').decode())
+    return AuthMiddleware(app, redis_store)
 
 
 @pytest.fixture

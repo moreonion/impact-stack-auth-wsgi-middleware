@@ -5,4 +5,5 @@
 #    pip-compile -v --output-file requirements.txt requirements.in
 #
 itsdangerous==1.1.0
+redis==3.2.1
 werkzeug==0.15.4

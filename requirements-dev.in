@@ -11,5 +11,6 @@ pytest-cov
 safety
 
 # test dependencies
+fakeredis
 flask
 flask-jwt

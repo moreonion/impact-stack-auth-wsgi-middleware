@@ -1,6 +1,7 @@
 """Main package for the auth wsgi middleware."""
 
 import itsdangerous
+import redis
 from werkzeug.wrappers import BaseRequest
 
 
@@ -31,5 +32,24 @@ class AuthMiddleware:
         """Handle an incoming request."""
         token = self.token_store[self.get_session_uuid(environ)]
         if token:
-            environ['HTTP_AUTHORIZATION'] = 'JWT ' + token
+            environ['HTTP_AUTHORIZATION'] = 'JWT ' + token.decode()
         return self.wsgi_app(environ, start_response)
+
+
+class RedisStore:
+    """Redis backend for the session store."""
+
+    @classmethod
+    def from_url(cls, url, client_class=redis.Redis):
+        """Create a new instance by URL."""
+        return cls(client_class.from_url(url))
+
+    def __init__(self, client):
+        """Create a new instance by passing a client instance."""
+        self._client = client
+
+    def __getitem__(self, name):
+        """Read a value from the session store."""
+        if name:
+            return self._client.get(name)
+        return None
