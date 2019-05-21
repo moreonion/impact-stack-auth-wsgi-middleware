@@ -21,11 +21,10 @@ cache:
 
 before_script:
   - apt-get update
-  - apt-get install -y --no-install-recommends git
+  - apt-get install -y --no-install-recommends git make
   - python -V               # Print out python version for debugging
-  - python3 -m venv .venv
+  - make development
   - source .venv/bin/activate
-  - pip install -r requirements-dev.txt
 
 stages:
   - build
@@ -34,9 +33,7 @@ stages:
 build:
   stage: build
   script:
-  - python3 -m venv .venv
-  - source .venv/bin/activate
-  - pip install -r requirements-dev.txt
+  - make development
 
 test:
   stage: test
