@@ -11,4 +11,5 @@ pytest-cov
 safety
 
 # test dependencies
+flask
 flask-jwt
