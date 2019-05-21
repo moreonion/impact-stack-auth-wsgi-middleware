@@ -1,7 +1,7 @@
 # WSGI authentication middleware
 
 This app is just one piece in our bigger [authorization scheme for microservices](https://docs.google.com/document/d/1wbdSyAU0OV0e2rH-nh_IiJkgNDWyKXhptsJwIff64A0/edit?usp=sharing).
-Its purpose is make migrating to session cookies simpler by ensuring that they only need to deal with JWTs that contain all the needed claims.
+Its purpose is make migrating to session cookies simpler by ensuring that backend microservices only need to deal with JWTs that contain all the needed claims.
 
 ## Architecture decisions
 
