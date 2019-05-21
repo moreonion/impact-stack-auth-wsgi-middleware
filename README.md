@@ -23,8 +23,9 @@ AuthMiddleware.init_app(app)
 
 The middleware reads its configuration from the Flask `app.config` dictionary. All variables are prefixed with `AUTH_…`.
 
-| `AUTH_SECRET_KEY`         | The secret key used to verify the cookie value’s signature. It defaults to `SECRET_KEY`.                                                                      |
+| variable                  | description                                                                                                                                                   |
 |---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `AUTH_SECRET_KEY`         | The secret key used to verify the cookie value’s signature. It defaults to `SECRET_KEY`.                                                                      |
 | `AUTH_COOKIE_NAME`        | Name of the cookie from which the the session UUID is read. Defaults to `session_uuid`.                                                                       |
 | `AUTH_REDIS_URL`          | URL to a redis database (see the [redis-py documentation](https://redis-py.readthedocs.io/en/latest/#redis.Redis.from_url) for more information)).            |
 | `AUTH_REDIS_CLIENT_CLASS` | The redis client class used by the middleware. Mostly needed for testing. Defaults to [`redis.Redis`](https://redis-py.readthedocs.io/en/latest/#redis.Redis) |
