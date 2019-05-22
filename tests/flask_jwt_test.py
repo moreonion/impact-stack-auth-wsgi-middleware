@@ -3,14 +3,11 @@
 # pylint: disable=redefined-outer-name
 
 import json
-from unittest.mock import Mock
 
 import fakeredis
 import pytest
 from flask import Flask, jsonify
-from flask_jwt import (
-    JWT, _default_jwt_payload_handler, current_identity, jwt_required
-)
+from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 
 from impact_stack.auth_wsgi_middleware import AuthMiddleware
 
@@ -18,16 +15,7 @@ from impact_stack.auth_wsgi_middleware import AuthMiddleware
 @pytest.fixture(scope='class')
 def jwt():
     """Create a Flask-JWT object."""
-    jwt = JWT(identity_handler=lambda p: p)
-
-    def payload_handler(identity):
-        user = Mock()
-        user.id = identity
-        payload = _default_jwt_payload_handler(user)
-        return payload
-
-    jwt.jwt_payload_handler(payload_handler)
-    return jwt
+    return JWTManager()
 
 
 @pytest.fixture(scope='class')
@@ -36,16 +24,16 @@ def app(jwt):
     app = Flask(__name__)
     app.debug = True
     app.config['SECRET_KEY'] = 'super-secret'
-    app.config['JWT_AUTH_URL_RULE'] = None
+    app.config['JWT_SECRET_KEY'] = 'super-secret'
+    app.config['JWT_HEADER_TYPE'] = 'JWT'
     app.config['AUTH_REDIS_URL'] = 'redis://:password@localhost:6379/0'
     app.config['AUTH_REDIS_CLIENT_CLASS'] = fakeredis.FakeStrictRedis
 
     jwt.init_app(app)
 
-    @jwt_required()
+    @jwt_required
     def protected():
-        data = {}
-        data.update(current_identity)
+        data = get_jwt()
         return jsonify(data)
 
     app.route('/protected')(protected)
@@ -56,9 +44,9 @@ def app(jwt):
 @pytest.fixture(scope='class')
 def auth_middleware(app, jwt):
     """Initialize the auth middleware."""
-    # pylint: disable=protected-access
+    # pylint: disable=protected-access,unused-argument
     m = AuthMiddleware.init_app(app)
-    m.token_store._client.set('user1-uuid', jwt.jwt_encode_callback('user1').decode())
+    m.token_store._client.set('user1-uuid', create_jwt('user1'))
     return m
 
 
@@ -106,5 +94,5 @@ class TestMiddleware:
         del data['iat']
         del data['nbf']
         assert data == {
-            'identity': 'user1',
+            'sub': 'user1',
         }

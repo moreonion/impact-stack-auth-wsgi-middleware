@@ -15,7 +15,7 @@ click==7.0                # via flask, pip-tools, safety
 coverage==4.5.3           # via pytest-cov
 dparse==0.4.1             # via safety
 fakeredis==1.0.3
-flask-jwt==0.3.2
+flask-jwt-simple==0.0.3
 flask==1.0.3
 identify==1.4.1           # via pre-commit
 idna==2.8                 # via requests
@@ -36,7 +36,7 @@ pre-commit==1.15.2
 py==1.8.0                 # via pytest
 pycodestyle==2.5.0
 pydocstyle==3.0.0
-pyjwt==1.4.2              # via flask-jwt
+pyjwt==1.4.2              # via flask-jwt-simple
 pylint==2.3.1
 pyparsing==2.4.0          # via packaging
 pytest-cov==2.6.1

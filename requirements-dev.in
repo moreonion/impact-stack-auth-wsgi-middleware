@@ -13,4 +13,4 @@ safety
 # test dependencies
 fakeredis
 flask
-flask-jwt
+flask-jwt-simple
