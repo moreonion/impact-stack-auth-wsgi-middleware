@@ -13,5 +13,6 @@ setup(
         'itsdangerous',
         'redis',
         'werkzeug',
-    ]
+    ],
+    python_requires='~=3.3',
 )
