@@ -11,4 +11,6 @@ pytest-cov
 safety
 
 # test dependencies
-flask-jwt
+fakeredis
+flask
+flask-jwt-simple
