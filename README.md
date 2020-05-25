@@ -29,3 +29,4 @@ The middleware reads its configuration from the Flask `app.config` dictionary. A
 | `AUTH_COOKIE_NAME`        | Name of the cookie from which the the session UUID is read. Defaults to `session_uuid`.                                                                       |
 | `AUTH_REDIS_URL`          | URL to a redis database (see the [redis-py documentation](https://redis-py.readthedocs.io/en/latest/#redis.Redis.from_url) for more information)).            |
 | `AUTH_REDIS_CLIENT_CLASS` | The redis client class used by the middleware. Mostly needed for testing. Defaults to [`redis.Redis`](https://redis-py.readthedocs.io/en/latest/#redis.Redis) |
+| `AUTH_HEADER_TYPE`         | Prefix used when adding the JWT to the HTTP Authorization header. Defaults to the value of `JWT_HEADER_TYPE` which in turn defaults to `'Bearer'`.           |
