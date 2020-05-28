@@ -1,5 +1,7 @@
 """Main package for the auth wsgi middleware."""
 
+import hashlib
+
 import itsdangerous
 import redis
 from werkzeug.wrappers import BaseRequest
@@ -13,12 +15,17 @@ class AuthMiddleware:
         """Create a new middleware instance according to the app config and wrap the app."""
         cookie_name = app.config.get('AUTH_COOKIE', 'session_uuid')
         secret_key = app.config.get('AUTH_SECRET_KEY', app.config.get('SECRET_KEY'))
-        signer = itsdangerous.Signer(secret_key)
+        digest = app.config.get('AUTH_SIGNATURE_ALGORITHM', hashlib.sha256)
+        signer = itsdangerous.Signer(secret_key, digest_method=digest)
         redis_url = app.config['AUTH_REDIS_URL']
         redis_client_class = app.config.get('AUTH_REDIS_CLIENT_CLASS', redis.Redis)
         store = RedisStore.from_url(redis_url, redis_client_class)
+        header_type = app.config.get(
+            'AUTH_HEADER_TYPE',
+            app.config.get('JWT_HEADER_TYPE', 'Bearer'),
+        )
 
-        return cls(signer, cookie_name, store).wrap(app)
+        return cls(signer, cookie_name, store, header_type).wrap(app)
 
     def wrap(self, app):
         """Wrap a Flask app."""
@@ -26,12 +33,13 @@ class AuthMiddleware:
         app.wsgi_app = self
         return self
 
-    def __init__(self, signer, cookie_name, token_store):
+    def __init__(self, signer, cookie_name, token_store, header_type):
         """Create a new instance."""
         self.signer = signer
         self.cookie_name = cookie_name
         self.token_store = token_store
         self.wsgi_app = None
+        self.header_type = header_type
 
     def get_session_uuid(self, environ):
         """Read the session ID from the Cookie header and validate it."""
@@ -48,7 +56,7 @@ class AuthMiddleware:
         """Handle an incoming request."""
         token = self.token_store[self.get_session_uuid(environ)]
         if token:
-            environ['HTTP_AUTHORIZATION'] = 'JWT ' + token.decode()
+            environ['HTTP_AUTHORIZATION'] = self.header_type + ' ' + token.decode()
         return self.wsgi_app(environ, start_response)
 
 
