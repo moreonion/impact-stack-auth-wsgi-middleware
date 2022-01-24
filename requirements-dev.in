@@ -12,6 +12,7 @@ pytest-cov
 safety
 
 # test dependencies
-fakeredis
+fakeredis<1.6  # Tests fail with a newer version
 flask
 flask-jwt-simple
+pyjwt<2  # required by flask-jwt-simple

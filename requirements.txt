@@ -8,26 +8,35 @@
     # via -r requirements.in
 click==8.0.3
     # via pip-tools
+deprecated==1.2.13
+    # via redis
 importlib-metadata==4.10.1
     # via
     #   click
     #   pep517
-itsdangerous==1.1.0
+    #   redis
+itsdangerous==2.0.1
     # via impact-stack-auth-wsgi-middleware
+packaging==21.3
+    # via redis
 pep517==0.12.0
     # via pip-tools
 pip-tools==6.4.0
     # via -r requirements.in
-redis==3.2.1
+pyparsing==3.0.7
+    # via packaging
+redis==4.1.1
     # via impact-stack-auth-wsgi-middleware
 tomli==2.0.0
     # via pep517
 typing-extensions==4.0.1
     # via importlib-metadata
-werkzeug==0.15.4
+werkzeug==2.0.2
     # via impact-stack-auth-wsgi-middleware
 wheel==0.37.1
     # via pip-tools
+wrapt==1.13.3
+    # via deprecated
 zipp==3.7.0
     # via
     #   importlib-metadata
