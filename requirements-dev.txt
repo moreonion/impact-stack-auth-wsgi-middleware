@@ -37,8 +37,8 @@ filelock==3.4.2
 flask==2.0.2
     # via
     #   -r requirements-dev.in
-    #   flask-jwt-simple
-flask-jwt-simple==0.0.3
+    #   flask-jwt-extended
+flask-jwt-extended==4.3.1
     # via -r requirements-dev.in
 identify==2.4.5
     # via pre-commit
@@ -100,10 +100,8 @@ py==1.11.0
     # via pytest
 pydocstyle[toml]==6.1.1
     # via -r requirements-dev.in
-pyjwt==1.7.1
-    # via
-    #   -r requirements-dev.in
-    #   flask-jwt-simple
+pyjwt==2.3.0
+    # via flask-jwt-extended
 pylint==2.12.2
     # via -r requirements-dev.in
 pyparsing==3.0.7
@@ -120,7 +118,6 @@ pyyaml==6.0
     #   pre-commit
 redis==3.5.3
     # via
-    #   -r requirements-dev.in
     #   fakeredis
     #   impact-stack-auth-wsgi-middleware
 requests==2.27.1
@@ -164,6 +161,7 @@ virtualenv==20.13.0
 werkzeug==2.0.2
     # via
     #   flask
+    #   flask-jwt-extended
     #   impact-stack-auth-wsgi-middleware
 wheel==0.37.1
     # via pip-tools

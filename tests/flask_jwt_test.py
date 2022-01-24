@@ -5,9 +5,9 @@
 import json
 
 import fakeredis
+import flask_jwt_extended
 import pytest
 from flask import Flask, jsonify
-from flask_jwt_simple import JWTManager, create_jwt, get_jwt, jwt_required
 
 from impact_stack.auth_wsgi_middleware import AuthMiddleware
 
@@ -15,7 +15,7 @@ from impact_stack.auth_wsgi_middleware import AuthMiddleware
 @pytest.fixture(scope="class")
 def jwt():
     """Create a Flask-JWT object."""
-    return JWTManager()
+    return flask_jwt_extended.JWTManager()
 
 
 @pytest.fixture(scope="class")
@@ -31,9 +31,9 @@ def app(jwt):
 
     jwt.init_app(app)
 
-    @jwt_required
+    @flask_jwt_extended.jwt_required()
     def protected():
-        data = get_jwt()
+        data = flask_jwt_extended.get_jwt()
         return jsonify(data)
 
     app.route("/protected")(protected)
@@ -46,7 +46,7 @@ def auth_middleware(app, jwt):
     """Initialize the auth middleware."""
     # pylint: disable=protected-access,unused-argument
     m = AuthMiddleware.init_app(app)
-    m.token_store._client.set("user1-uuid", create_jwt("user1"))
+    m.token_store._client.set("user1-uuid", flask_jwt_extended.create_access_token("user1"))
     return m
 
 
@@ -90,9 +90,4 @@ class TestMiddleware:
         response = client.get("/protected")
         assert response.status_code == 200
         data = json.loads(response.get_data(as_text=True))
-        del data["exp"]
-        del data["iat"]
-        del data["nbf"]
-        assert data == {
-            "sub": "user1",
-        }
+        assert "sub" in data and data["sub"] == "user1"
