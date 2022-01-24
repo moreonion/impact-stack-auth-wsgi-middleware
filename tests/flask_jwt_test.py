@@ -26,7 +26,7 @@ def app(jwt):
     app.config["SECRET_KEY"] = "super-secret"
     app.config["JWT_SECRET_KEY"] = "super-secret"
     app.config["JWT_HEADER_TYPE"] = "JWT"
-    app.config["AUTH_REDIS_URL"] = "redis://:password@localhost:6379/0"
+    app.config["AUTH_REDIS_URL"] = "redis://localhost:6379/0"
     app.config["AUTH_REDIS_CLIENT_CLASS"] = fakeredis.FakeStrictRedis
 
     jwt.init_app(app)

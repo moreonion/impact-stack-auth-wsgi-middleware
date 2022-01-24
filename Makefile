@@ -34,7 +34,8 @@ requirements: requirements.txt requirements-dev.txt
 %.txt: %.in
 	$(VENV)/bin/pip-compile -v --output-file $@ $<
 
-requirements-dev.txt: requirements-dev.in requirements.in
+requirements-dev.txt: requirements-dev.in requirements.in setup.py
+requirements.txt: requirements.in setup.py
 
 # Actual files/directories
 ################################################################################

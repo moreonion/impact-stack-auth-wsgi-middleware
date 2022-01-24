@@ -11,7 +11,7 @@ setup(
     maintainer_email="roman@more-onion.com",
     install_requires=[
         "itsdangerous",
-        "redis",
+        "redis<4.1",
         "werkzeug",
     ],
     python_requires="~=3.3",
