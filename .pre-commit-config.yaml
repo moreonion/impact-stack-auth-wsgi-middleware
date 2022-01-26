@@ -1,5 +1,6 @@
--   repo: git@github.com:pre-commit/pre-commit-hooks
-    sha: v1.3.0
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
     hooks:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
@@ -12,20 +13,17 @@
         entry: safety check -r
         language: system
         files: requirements.txt
-    -   id: pycodestyle
-        name: pycodestyle
-        entry: pycodestyle
-        language: system
-        exclude: ^migrations/
-        types:
-        - python
     -   id: isort
         name: isort
         entry: isort
         language: system
-        exclude: ^migrations/
         types:
         - python
+    -   id: black
+        name: black
+        entry: black
+        language: system
+        files: \.py$
     -   id: pylint
         name: pylint
         entry: pylint --jobs=2

@@ -1,10 +1,11 @@
 -r requirements.in
 
 # dev-tools
+black
+isort
 pip-tools
 pre-commit
-pycodestyle
-pydocstyle
+pydocstyle[toml]>=6
 pylint
 pytest
 pytest-cov
@@ -13,4 +14,4 @@ safety
 # test dependencies
 fakeredis
 flask
-flask-jwt-simple
+flask-jwt-extended
