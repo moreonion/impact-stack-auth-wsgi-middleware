@@ -1,3 +1,21 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "impact-stack-auth-wsgi-middleware"
+version = "0.1.0"
+dependencies = [
+    "itsdangerous",
+    "redis<4.1",
+    "werkzeug",
+]
+license = "GPL-3.0-or-later"
+authors = [
+  {name = "Roman Zimmermann", email = "roman@more-onion.com"},
+]
+readme = "README.md"
+
 [tool.black]
 line-length = 100
 
@@ -31,3 +49,6 @@ python_classes = [
   "*Test",
   "Test*",
 ]
+
+[tool.setuptools]
+packages = ["impact_stack.auth_wsgi_middleware"]
