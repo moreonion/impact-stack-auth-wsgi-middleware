@@ -4,7 +4,7 @@ import hashlib
 
 import itsdangerous
 import redis
-from werkzeug.wrappers import BaseRequest
+from werkzeug.wrappers import Request
 
 
 class AuthMiddleware:
@@ -43,7 +43,7 @@ class AuthMiddleware:
 
     def get_session_uuid(self, environ):
         """Read the session ID from the Cookie header and validate it."""
-        request = BaseRequest(environ)
+        request = Request(environ)
         data = request.cookies.get(self.cookie_name)
         if data:
             try:
