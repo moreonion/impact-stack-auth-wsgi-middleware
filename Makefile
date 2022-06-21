@@ -35,7 +35,9 @@ requirements: requirements.txt requirements-dev.txt
 	$(VENV)/bin/pip-compile -v --output-file $@ $<
 
 requirements-dev.txt: requirements-dev.in requirements.in setup.py
-requirements.txt: requirements.in setup.py
+
+requirements.txt: pyproject.toml
+	$(VENV)/bin/pip-compile -v --output-file $@ $<
 
 # Actual files/directories
 ################################################################################
