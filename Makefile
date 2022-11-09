@@ -31,13 +31,11 @@ safety: requirements.txt development
 
 requirements: requirements.txt requirements-dev.txt
 
-%.txt: %.in
-	$(VENV)/bin/pip-compile -v --output-file $@ $<
-
-requirements-dev.txt: requirements-dev.in requirements.txt
-
 requirements.txt: pyproject.toml
-	$(VENV)/bin/pip-compile -v --output-file $@ $<
+	$(VENV)/bin/pip-compile -v --output-file=$@ $<
+
+requirements-dev.txt: pyproject.toml
+	$(VENV)/bin/pip-compile -v --output-file=$@ --extra=dev $<
 
 # Actual files/directories
 ################################################################################
