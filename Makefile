@@ -1,4 +1,4 @@
-.PHONY: help bootstrap lint test safety requirements
+.PHONY: help bootstrap lint test requirements
 
 VENV?=.venv
 PYTHON?=python3
@@ -10,7 +10,6 @@ help:
 	@echo "make development     -- setup development environment"
 	@echo "make test            -- run full test suite"
 	@echo "make lint            -- run all linters on the code base"
-	@echo "make safety          -- run safety check on packages"
 	@echo
 	@echo "make requirements    -- only compile the requirements*.txt files"
 	@echo "make .venv           -- bootstrap the virtualenv."
@@ -26,18 +25,13 @@ lint: development
 test: development
 	$(VENV)/bin/pytest
 
-safety: requirements.txt development
-	$(VENV)/bin/safety check -r $<
-
 requirements: requirements.txt requirements-dev.txt
 
-%.txt: %.in
-	$(VENV)/bin/pip-compile -v --output-file $@ $<
-
-requirements-dev.txt: requirements-dev.in requirements.txt
-
 requirements.txt: pyproject.toml
-	$(VENV)/bin/pip-compile -v --output-file $@ $<
+	$(VENV)/bin/pip-compile -v --output-file=$@ $<
+
+requirements-dev.txt: pyproject.toml
+	$(VENV)/bin/pip-compile -v --output-file=$@ --extra=dev $<
 
 # Actual files/directories
 ################################################################################

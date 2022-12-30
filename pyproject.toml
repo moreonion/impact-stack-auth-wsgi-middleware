@@ -15,6 +15,21 @@ authors = [
 ]
 readme = "README.md"
 
+[project.optional-dependencies]
+dev = [
+  "black",
+  "fakeredis",
+  "flask",
+  "flask-jwt-extended",
+  "isort",
+  "pip-tools",
+  "pre-commit",
+  "pydocstyle[toml]>=6",
+  "pylint",
+  "pytest",
+  "pytest-cov",
+]
+
 [tool.black]
 line-length = 100
 
