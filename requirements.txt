@@ -14,5 +14,5 @@ redis==4.0.2
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 werkzeug==2.2.3
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-wrapt==1.14.1
+wrapt==1.15.0
     # via deprecated

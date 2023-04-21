@@ -1,6 +1,6 @@
 """Test the middleware by wrapping a Flask app that accepts JWT tokens."""
 
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,unused-argument
 
 import json
 
@@ -44,17 +44,18 @@ def app(jwt):
 @pytest.fixture(scope="class")
 def auth_middleware(app, jwt):
     """Initialize the auth middleware."""
-    # pylint: disable=protected-access,unused-argument
-    m = AuthMiddleware.init_app(app)
-    m.token_store._client.set("user1-uuid", flask_jwt_extended.create_access_token("user1"))
-    return m
+    # pylint: disable=protected-access
+    middleware = AuthMiddleware.init_app(app)
+    middleware.token_store._client.set(
+        "user1-uuid", flask_jwt_extended.create_access_token("user1")
+    )
+    return middleware
 
 
 @pytest.fixture
 def client(app):
     """Define a test client instance and context."""
-    with app.test_client() as c:
-        yield c
+    return app.test_client()
 
 
 @pytest.mark.usefixtures("auth_middleware")
