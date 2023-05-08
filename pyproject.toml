@@ -1,10 +1,6 @@
-[build-system]
-requires = ["setuptools", "setuptools-scm"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "impact-stack-auth-wsgi-middleware"
-version = "0.2.0"
+dynamic = ["version"]
 dependencies = [
     "itsdangerous",
     "redis<4.1",
@@ -29,6 +25,16 @@ dev = [
   "pytest",
   "pytest-cov",
 ]
+
+[build-system]
+requires = [
+  "setuptools>=45",
+  "setuptools-scm[toml]>=6.2",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
 
 [tool.black]
 line-length = 100
