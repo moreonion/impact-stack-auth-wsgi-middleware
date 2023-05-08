@@ -71,7 +71,7 @@ class TestMiddleware:
     @staticmethod
     def test_access_denied_with_unsigned_cookie(client):
         """Test that a request with an unsigned session ID gets a 401."""
-        client.set_cookie("localhost", "session_uuid", "user1-uuid")
+        client.set_cookie("session_uuid", "user1-uuid")
         response = client.get("/protected")
         assert response.status_code == 401
 
@@ -79,15 +79,15 @@ class TestMiddleware:
     def test_access_denied_with_invalid_signature(auth_middleware, client):
         """Test that a request with an invalid signature gets a 401."""
         invalid_uuid = "user1-uuid.invalid-signature"
-        client.set_cookie("localhost", auth_middleware.cookie_name, invalid_uuid)
+        client.set_cookie(auth_middleware.cookie_name, invalid_uuid)
         response = client.get("/protected")
         assert response.status_code == 401
 
     @staticmethod
     def test_get_current_identity(auth_middleware, client):
         """Test that a request with a valid signed session ID gets a 200."""
-        signed_uuid = auth_middleware.signer.sign("user1-uuid")
-        client.set_cookie("localhost", auth_middleware.cookie_name, signed_uuid)
+        signed_uuid = auth_middleware.signer.sign("user1-uuid").decode()
+        client.set_cookie(auth_middleware.cookie_name, signed_uuid)
         response = client.get("/protected")
         assert response.status_code == 200
         data = json.loads(response.get_data(as_text=True))
