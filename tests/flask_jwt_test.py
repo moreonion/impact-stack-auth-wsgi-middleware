@@ -1,27 +1,27 @@
 """Test the middleware by wrapping a Flask app that accepts JWT tokens."""
 
-# pylint: disable=redefined-outer-name,unused-argument
+# pylint: disable=unused-argument
 
 import json
 
 import fakeredis
+import flask
 import flask_jwt_extended
 import pytest
-from flask import Flask, jsonify
 
 from impact_stack.auth_wsgi_middleware import AuthMiddleware
 
 
-@pytest.fixture(scope="class")
-def jwt():
+@pytest.fixture(name="jwt", scope="class")
+def fixture_jwt():
     """Create a Flask-JWT object."""
     return flask_jwt_extended.JWTManager()
 
 
-@pytest.fixture(scope="class")
-def app(jwt):
+@pytest.fixture(name="app", scope="class")
+def fixture_app(jwt):
     """Get the test app for wrapping."""
-    app = Flask(__name__)
+    app = flask.Flask(__name__)
     app.debug = True
     app.config["SECRET_KEY"] = "super-secret"
     app.config["JWT_SECRET_KEY"] = "super-secret"
@@ -34,15 +34,15 @@ def app(jwt):
     @flask_jwt_extended.jwt_required()
     def protected():
         data = flask_jwt_extended.get_jwt()
-        return jsonify(data)
+        return flask.jsonify(data)
 
     app.route("/protected")(protected)
     with app.app_context():
         yield app
 
 
-@pytest.fixture(scope="class")
-def auth_middleware(app, jwt):
+@pytest.fixture(name="auth_middleware", scope="class")
+def fixture_auth_middleware(app, jwt):
     """Initialize the auth middleware."""
     # pylint: disable=protected-access
     middleware = AuthMiddleware.init_app(app)
@@ -52,8 +52,8 @@ def auth_middleware(app, jwt):
     return middleware
 
 
-@pytest.fixture
-def client(app):
+@pytest.fixture(name="client")
+def fixture_client(app):
     """Define a test client instance and context."""
     return app.test_client()
 
