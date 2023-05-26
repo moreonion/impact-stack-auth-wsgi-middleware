@@ -14,7 +14,9 @@ class AuthMiddleware:
     def init_app(cls, app):
         """Create a new middleware instance according to the app config and wrap the app."""
         cookie_name = app.config.get("AUTH_COOKIE", "session_uuid")
-        secret_key = app.config.get("AUTH_SECRET_KEY", app.config.get("SECRET_KEY"))
+        secret_key = app.config.get(
+            "AUTH_SECRET_KEY", app.config.get("JWT_SECRET_KEY", app.config.get("SECRET_KEY"))
+        )
         digest = app.config.get("AUTH_SIGNATURE_ALGORITHM", hashlib.sha256)
         signer = itsdangerous.Signer(secret_key, digest_method=digest)
         redis_url = app.config["AUTH_REDIS_URL"]

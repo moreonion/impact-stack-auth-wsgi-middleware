@@ -92,3 +92,15 @@ class TestMiddleware:
         assert response.status_code == 200
         data = json.loads(response.get_data(as_text=True))
         assert "sub" in data and data["sub"] == "user1"
+
+
+def test_secret_key_precedence(jwt):
+    """Test precedence of the secret key config variables."""
+    app = flask.Flask(__name__)
+    app.config["AUTH_REDIS_URL"] = "redis://localhost:6379/0"
+    app.config["SECRET_KEY"] = "secret-key"
+    assert AuthMiddleware.init_app(app).signer.secret_keys == [b"secret-key"]
+    app.config["JWT_SECRET_KEY"] = "jwt-secret-key"
+    assert AuthMiddleware.init_app(app).signer.secret_keys == [b"jwt-secret-key"]
+    app.config["AUTH_SECRET_KEY"] = "auth-secret-key"
+    assert AuthMiddleware.init_app(app).signer.secret_keys == [b"auth-secret-key"]
