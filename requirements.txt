@@ -12,7 +12,7 @@ markupsafe==2.1.2
     # via werkzeug
 redis==4.0.2
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-werkzeug==2.2.3
+werkzeug==2.3.3
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 wrapt==1.15.0
     # via deprecated
