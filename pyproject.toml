@@ -3,7 +3,7 @@ name = "impact-stack-auth-wsgi-middleware"
 dynamic = ["version"]
 dependencies = [
     "itsdangerous",
-    "redis<4.1",
+    "redis",
     "werkzeug>=2.3",
 ]
 authors = [
