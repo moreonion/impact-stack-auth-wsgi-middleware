@@ -4,32 +4,29 @@
 #
 #    pip-compile --extra=dev --output-file=requirements-dev.txt pyproject.toml
 #
-astroid==2.15.5
+astroid==2.15.6
     # via pylint
 async-timeout==4.0.2
     # via redis
-black==23.3.0
+black==23.7.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 blinker==1.6.2
     # via flask
-build==0.10.0
-    # via pip-tools
 cfgv==3.3.1
     # via pre-commit
-click==8.1.3
+click==8.1.6
     # via
     #   black
     #   flask
-    #   pip-tools
 coverage[toml]==7.2.7
     # via pytest-cov
-dill==0.3.6
+dill==0.3.7
     # via pylint
-distlib==0.3.6
+distlib==0.3.7
     # via virtualenv
-exceptiongroup==1.1.1
+exceptiongroup==1.1.2
     # via pytest
-fakeredis==2.15.0
+fakeredis==2.17.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 filelock==3.12.2
     # via virtualenv
@@ -39,9 +36,9 @@ flask==2.3.2
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
 flask-jwt-extended==4.5.2
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-identify==2.5.24
+identify==2.5.26
     # via pre-commit
-importlib-metadata==6.7.0
+importlib-metadata==6.8.0
     # via flask
 iniconfig==2.0.0
     # via pytest
@@ -70,13 +67,10 @@ nodeenv==1.8.0
 packaging==23.1
     # via
     #   black
-    #   build
     #   pytest
-pathspec==0.11.1
+pathspec==0.11.2
     # via black
-pip-tools==6.13.0
-    # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-platformdirs==3.8.0
+platformdirs==3.10.0
     # via
     #   black
     #   pylint
@@ -87,21 +81,19 @@ pre-commit==3.3.3
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 pydocstyle[toml]==6.3.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-pyjwt==2.7.0
+pyjwt==2.8.0
     # via flask-jwt-extended
-pylint==2.17.4
+pylint==2.17.5
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-pyproject-hooks==1.0.0
-    # via build
 pytest==7.4.0
     # via
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
     #   pytest-cov
 pytest-cov==4.1.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-pyyaml==6.0
+pyyaml==6.0.1
     # via pre-commit
-redis==4.5.5
+redis==4.6.0
     # via
     #   fakeredis
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
@@ -112,32 +104,28 @@ sortedcontainers==2.4.0
 tomli==2.0.1
     # via
     #   black
-    #   build
     #   coverage
     #   pydocstyle
     #   pylint
     #   pytest
-tomlkit==0.11.8
+tomlkit==0.12.1
     # via pylint
-typing-extensions==4.6.3
+typing-extensions==4.7.1
     # via
     #   astroid
     #   black
     #   pylint
-virtualenv==20.23.1
+virtualenv==20.24.2
     # via pre-commit
 werkzeug==2.3.6
     # via
     #   flask
     #   flask-jwt-extended
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
-wheel==0.40.0
-    # via pip-tools
 wrapt==1.15.0
     # via astroid
-zipp==3.15.0
+zipp==3.16.2
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
 # setuptools
