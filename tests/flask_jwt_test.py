@@ -10,7 +10,7 @@ import flask
 import flask_jwt_extended
 import pytest
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware
+from impact_stack.auth_wsgi_middleware import AuthMiddleware, CookieHandler
 
 
 @pytest.fixture(name="jwt", scope="class")
@@ -81,14 +81,15 @@ class TestMiddleware:
     def test_access_denied_with_invalid_signature(self, auth_middleware, client):
         """Test that a request with an invalid signature gets a 401."""
         invalid_uuid = "user1-uuid.invalid-signature"
-        client.set_cookie(auth_middleware.cookie_name, invalid_uuid)
+        client.set_cookie(auth_middleware.cookie_handler.cookie_name, invalid_uuid)
         response = client.get("/protected")
         assert response.status_code == 401
 
     def test_get_current_identity(self, auth_middleware: AuthMiddleware, client, requests_mock):
         """Test that a request with a valid signed session ID gets a 200."""
-        signed_uuid = auth_middleware.signer.sign("user1-uuid").decode()
-        client.set_cookie(auth_middleware.cookie_name, signed_uuid)
+        signed_uuid = auth_middleware.cookie_handler.signer.sign("user1-uuid").decode()
+        cookie_name = auth_middleware.cookie_handler.cookie_name
+        client.set_cookie(cookie_name, signed_uuid)
         response = client.get("/protected")
         assert response.status_code == 200
         data = json.loads(response.get_data(as_text=True))
@@ -100,7 +101,7 @@ class TestMiddleware:
         )
         # Due to https://github.com/jamielennox/requests-mock/issues/17 we have to generate the
         # Set-Cookie header here manually instead of using requests-mock to do it.
-        headers = {"Set-Cookie": f"{auth_middleware.cookie_name}={signed_uuid}; Max-Age=86400"}
+        headers = {"Set-Cookie": f"{cookie_name}={signed_uuid}; Max-Age=86400"}
         requests_mock.post("https://impact-stack.net/api/auth/v1/refresh", json={}, headers=headers)
         response = client.get("/protected")
         # The flask app response is returned.
@@ -119,8 +120,8 @@ def test_secret_key_precedence(jwt):
     app = flask.Flask(__name__)
     app.config["AUTH_REDIS_URL"] = "redis://localhost:6379/0"
     app.config["SECRET_KEY"] = "secret-key"
-    assert AuthMiddleware.init_app(app).signer.secret_keys == [b"secret-key"]
+    assert CookieHandler.from_app(app).signer.secret_keys == [b"secret-key"]
     app.config["JWT_SECRET_KEY"] = "jwt-secret-key"
-    assert AuthMiddleware.init_app(app).signer.secret_keys == [b"jwt-secret-key"]
+    assert CookieHandler.from_app(app).signer.secret_keys == [b"jwt-secret-key"]
     app.config["AUTH_SECRET_KEY"] = "auth-secret-key"
-    assert AuthMiddleware.init_app(app).signer.secret_keys == [b"auth-secret-key"]
+    assert CookieHandler.from_app(app).signer.secret_keys == [b"auth-secret-key"]
