@@ -1,6 +1,6 @@
 """Test the middleware by wrapping a Flask app that accepts JWT tokens."""
 
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,too-few-public-methods
 
 import datetime
 import json
@@ -10,7 +10,7 @@ import flask
 import flask_jwt_extended
 import pytest
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware, CookieHandler
+from impact_stack.auth_wsgi_middleware import AuthMiddleware, CookieHandler, TokenRefresher
 
 
 @pytest.fixture(name="jwt", scope="class")
@@ -125,3 +125,14 @@ def test_secret_key_precedence(jwt):
     assert CookieHandler.from_app(app).signer.secret_keys == [b"jwt-secret-key"]
     app.config["AUTH_SECRET_KEY"] = "auth-secret-key"
     assert CookieHandler.from_app(app).signer.secret_keys == [b"auth-secret-key"]
+
+
+class TokenRefresherTest:
+    """Test the token refresher."""
+
+    def test_exclude_path(self, app):
+        """Test that no token request is triggered on excluded paths."""
+        refresher = TokenRefresher.from_app(app)
+        # Emulate gunicorns behavior.
+        environ = {"SCRIPT_NAME": "/api/auth", "PATH_INFO": "/v1/refresh"}
+        assert refresher(0, environ) is None

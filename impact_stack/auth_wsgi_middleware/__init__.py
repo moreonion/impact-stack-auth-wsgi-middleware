@@ -19,16 +19,20 @@ class TokenRefresher:
         return cls(
             auth_client=rest.ClientFactory.from_app(app).get_client("auth", needs_auth=False),
             minimum_life_time=app.config.get("AUTH_MINIMUM_TOKEN_LIFE_TIME", 4 * 3600),
+            exclude_paths=app.config.get("AUTH_REFRESH_EXCLUDE_PATHS", ["/api/auth/v1/refresh"]),
         )
 
-    def __init__(self, auth_client, minimum_life_time) -> None:
+    def __init__(self, auth_client, minimum_life_time, exclude_paths) -> None:
         """Create a new token refresher."""
         self.auth_client = auth_client
         self.minimum_life_time = minimum_life_time
+        self.exclude_paths = exclude_paths
 
     def __call__(self, ttl: int, environ) -> Optional[str]:
         """Refresh the token when needed."""
         if ttl >= self.minimum_life_time:
+            return None
+        if environ["SCRIPT_NAME"] + environ["PATH_INFO"] in self.exclude_paths:
             return None
         response = self.auth_client.post(
             "refresh", headers={"Authorization": environ["HTTP_AUTHORIZATION"]}
