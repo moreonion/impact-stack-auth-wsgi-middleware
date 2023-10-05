@@ -2,6 +2,7 @@
 name = "impact-stack-auth-wsgi-middleware"
 dynamic = ["version"]
 dependencies = [
+    "impact-stack-rest",
     "itsdangerous",
     "redis",
     "werkzeug>=2.3",
@@ -23,6 +24,7 @@ dev = [
   "pylint",
   "pytest",
   "pytest-cov",
+  "requests-mock",
 ]
 
 [build-system]

@@ -12,8 +12,12 @@ black==23.9.1
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 blinker==1.6.2
     # via flask
+certifi==2023.7.22
+    # via requests
 cfgv==3.4.0
     # via pre-commit
+charset-normalizer==3.3.0
+    # via requests
 click==8.1.7
     # via
     #   black
@@ -38,6 +42,10 @@ flask-jwt-extended==4.5.2
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 identify==2.5.29
     # via pre-commit
+idna==3.4
+    # via requests
+impact-stack-rest==0.0.0
+    # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 importlib-metadata==6.8.0
     # via flask
 iniconfig==2.0.0
@@ -97,6 +105,14 @@ redis==5.0.0
     # via
     #   fakeredis
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
+requests==2.31.0
+    # via
+    #   impact-stack-rest
+    #   requests-mock
+requests-mock==1.11.0
+    # via impact-stack-auth-wsgi-middleware (pyproject.toml)
+six==1.16.0
+    # via requests-mock
 snowballstemmer==2.2.0
     # via pydocstyle
 sortedcontainers==2.4.0
@@ -115,6 +131,8 @@ typing-extensions==4.8.0
     #   astroid
     #   black
     #   pylint
+urllib3==2.0.6
+    # via requests
 virtualenv==20.24.5
     # via pre-commit
 werkzeug==2.3.7

@@ -2,6 +2,7 @@
 
 # pylint: disable=unused-argument
 
+import datetime
 import json
 
 import fakeredis
@@ -28,6 +29,7 @@ def fixture_app(jwt):
     app.config["JWT_HEADER_TYPE"] = "JWT"
     app.config["AUTH_REDIS_URL"] = "redis://localhost:6379/0"
     app.config["AUTH_REDIS_CLIENT_CLASS"] = fakeredis.FakeStrictRedis
+    app.config["IMPACT_STACK_API_URL"] = "https://impact-stack.net/api"
 
     jwt.init_app(app)
 
@@ -46,8 +48,11 @@ def fixture_auth_middleware(app, jwt):
     """Initialize the auth middleware."""
     # pylint: disable=protected-access
     middleware = AuthMiddleware.init_app(app)
+    expire_in = datetime.timedelta(days=1)
     middleware.token_store._client.set(
-        "user1-uuid", flask_jwt_extended.create_access_token("user1")
+        "user1-uuid",
+        flask_jwt_extended.create_access_token("user1", expires_delta=expire_in),
+        ex=expire_in,
     )
     return middleware
 
@@ -62,29 +67,25 @@ def fixture_client(app):
 class TestMiddleware:
     """Test the middleware."""
 
-    @staticmethod
-    def test_access_denied_without_cookie(client):
+    def test_access_denied_without_cookie(self, client):
         """Test that a request without session ID gets a 401."""
         response = client.get("/protected")
         assert response.status_code == 401
 
-    @staticmethod
-    def test_access_denied_with_unsigned_cookie(client):
+    def test_access_denied_with_unsigned_cookie(self, client):
         """Test that a request with an unsigned session ID gets a 401."""
         client.set_cookie("session_uuid", "user1-uuid")
         response = client.get("/protected")
         assert response.status_code == 401
 
-    @staticmethod
-    def test_access_denied_with_invalid_signature(auth_middleware, client):
+    def test_access_denied_with_invalid_signature(self, auth_middleware, client):
         """Test that a request with an invalid signature gets a 401."""
         invalid_uuid = "user1-uuid.invalid-signature"
         client.set_cookie(auth_middleware.cookie_name, invalid_uuid)
         response = client.get("/protected")
         assert response.status_code == 401
 
-    @staticmethod
-    def test_get_current_identity(auth_middleware, client):
+    def test_get_current_identity(self, auth_middleware: AuthMiddleware, client, requests_mock):
         """Test that a request with a valid signed session ID gets a 200."""
         signed_uuid = auth_middleware.signer.sign("user1-uuid").decode()
         client.set_cookie(auth_middleware.cookie_name, signed_uuid)
@@ -92,6 +93,25 @@ class TestMiddleware:
         assert response.status_code == 200
         data = json.loads(response.get_data(as_text=True))
         assert "sub" in data and data["sub"] == "user1"
+
+        # Force a token refresh
+        auth_middleware.token_refresher.minimum_life_time = (
+            datetime.timedelta(days=1).total_seconds() + 1
+        )
+        # Due to https://github.com/jamielennox/requests-mock/issues/17 we have to generate the
+        # Set-Cookie header here manually instead of using requests-mock to do it.
+        headers = {"Set-Cookie": f"{auth_middleware.cookie_name}={signed_uuid}; Max-Age=86400"}
+        requests_mock.post("https://impact-stack.net/api/auth/v1/refresh", json={}, headers=headers)
+        response = client.get("/protected")
+        # The flask app response is returned.
+        assert response.status_code == 200
+        assert response.json["sub"] == "user1"
+        # A new token is generated.
+        assert len(requests_mock.request_history) == 1
+        assert "Authorization" in requests_mock.request_history[0].headers
+        # The cookie header is forwarded.
+        assert "Set-Cookie" in response.headers
+        assert response.headers["Set-Cookie"] == headers["Set-Cookie"]
 
 
 def test_secret_key_precedence(jwt):
