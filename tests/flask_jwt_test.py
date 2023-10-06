@@ -10,7 +10,7 @@ import flask
 import flask_jwt_extended
 import pytest
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware, CookieHandler, TokenRefresher
+from impact_stack.auth_wsgi_middleware import AuthMiddleware, from_dict
 
 
 @pytest.fixture(name="jwt", scope="class")
@@ -46,14 +46,15 @@ def fixture_app(jwt):
 @pytest.fixture(name="auth_middleware", scope="class")
 def fixture_auth_middleware(app, jwt):
     """Initialize the auth middleware."""
-    # pylint: disable=protected-access
-    middleware = AuthMiddleware.init_app(app)
+    middleware = from_dict(app.config)
     expire_in = datetime.timedelta(days=1)
+    # pylint: disable=protected-access
     middleware.token_store._client.set(
         "user1-uuid",
         flask_jwt_extended.create_access_token("user1", expires_delta=expire_in),
         ex=expire_in,
     )
+    middleware.wrap(app)
     return middleware
 
 
@@ -115,24 +116,22 @@ class TestMiddleware:
         assert response.headers["Set-Cookie"] == headers["Set-Cookie"]
 
 
-def test_secret_key_precedence(jwt):
+def test_secret_key_precedence(app):
     """Test precedence of the secret key config variables."""
-    app = flask.Flask(__name__)
-    app.config["AUTH_REDIS_URL"] = "redis://localhost:6379/0"
+    del app.config["JWT_SECRET_KEY"]
     app.config["SECRET_KEY"] = "secret-key"
-    assert CookieHandler.from_app(app).signer.secret_keys == [b"secret-key"]
+    assert from_dict(app.config).cookie_handler.signer.secret_keys == [b"secret-key"]
     app.config["JWT_SECRET_KEY"] = "jwt-secret-key"
-    assert CookieHandler.from_app(app).signer.secret_keys == [b"jwt-secret-key"]
+    assert from_dict(app.config).cookie_handler.signer.secret_keys == [b"jwt-secret-key"]
     app.config["AUTH_SECRET_KEY"] = "auth-secret-key"
-    assert CookieHandler.from_app(app).signer.secret_keys == [b"auth-secret-key"]
+    assert from_dict(app.config).cookie_handler.signer.secret_keys == [b"auth-secret-key"]
 
 
 class TokenRefresherTest:
     """Test the token refresher."""
 
-    def test_exclude_path(self, app):
+    def test_exclude_path(self, auth_middleware: AuthMiddleware):
         """Test that no token request is triggered on excluded paths."""
-        refresher = TokenRefresher.from_app(app)
         # Emulate gunicorns behavior.
         environ = {"SCRIPT_NAME": "/api/auth", "PATH_INFO": "/v1/refresh"}
-        assert refresher(0, environ) is None
+        assert auth_middleware.token_refresher(0, environ) is None

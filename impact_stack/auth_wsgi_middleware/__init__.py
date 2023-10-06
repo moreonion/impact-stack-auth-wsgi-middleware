@@ -1,5 +1,6 @@
 """Main package for the auth wsgi middleware."""
 
+import functools
 import hashlib
 from typing import Optional
 
@@ -13,14 +14,7 @@ from impact_stack import rest
 class TokenRefresher:
     """Call the auth-app for a new token when needed."""
 
-    @classmethod
-    def from_app(cls, app):
-        """Create a new token refresher using a Flask app."""
-        return cls(
-            auth_client=rest.ClientFactory.from_app(app).get_client("auth", needs_auth=False),
-            minimum_life_time=app.config.get("AUTH_MINIMUM_TOKEN_LIFE_TIME", 4 * 3600),
-            exclude_paths=app.config.get("AUTH_REFRESH_EXCLUDE_PATHS", ["/api/auth/v1/refresh"]),
-        )
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, auth_client, minimum_life_time, exclude_paths) -> None:
         """Create a new token refresher."""
@@ -43,17 +37,7 @@ class TokenRefresher:
 class CookieHandler:
     """Utility to read and verify signed session uuids from the request."""
 
-    @classmethod
-    def from_app(cls, app):
-        """Create a new cookie handler instance from a Flask app."""
-        secret_key = app.config.get(
-            "AUTH_SECRET_KEY", app.config.get("JWT_SECRET_KEY", app.config.get("SECRET_KEY"))
-        )
-        digest = app.config.get("AUTH_SIGNATURE_ALGORITHM", hashlib.sha256)
-        return cls(
-            signer=itsdangerous.Signer(secret_key, digest_method=digest),
-            cookie_name=app.config.get("AUTH_COOKIE", "session_uuid"),
-        )
+    # pylint: disable=too-few-public-methods
 
     def __init__(self, signer, cookie_name):
         """Create a new cookie handler."""
@@ -74,21 +58,6 @@ class CookieHandler:
 
 class AuthMiddleware:
     """WSGI middleware that turns session cookies into JWT tokens."""
-
-    @classmethod
-    def init_app(cls, app):
-        """Create a new middleware instance according to the app config and wrap the app."""
-        redis_url = app.config["AUTH_REDIS_URL"]
-        redis_client_class = app.config.get("AUTH_REDIS_CLIENT_CLASS", redis.Redis)
-        return cls(
-            cookie_handler=CookieHandler.from_app(app),
-            token_store=RedisStore.from_url(redis_url, redis_client_class),
-            header_type=app.config.get(
-                "AUTH_HEADER_TYPE",
-                app.config.get("JWT_HEADER_TYPE", "Bearer"),
-            ),
-            token_refresher=TokenRefresher.from_app(app),
-        ).wrap(app)
 
     def wrap(self, app):
         """Wrap a Flask app."""
@@ -140,3 +109,46 @@ class RedisStore:
     def ttl(self, name):
         """Get the remaining ttl in seconds for the session."""
         return self._client.ttl(name)
+
+
+def from_config(config_getter):
+    """Construct the middleware and all its dependencies."""
+    auth_client = rest.ClientFactory(config_getter("IMPACT_STACK_API_URL"), None).get_client(
+        "auth", needs_auth=False
+    )
+    token_refresher = TokenRefresher(
+        auth_client,
+        config_getter("AUTH_MINIMUM_TOKEN_LIFE_TIME", 4 * 3600),
+        config_getter("AUTH_REFRESH_EXCLUDE_PATHS", ["/api/auth/v1/refresh"]),
+    )
+    signer = itsdangerous.Signer(
+        config_getter("AUTH_SECRET_KEY", None)
+        or config_getter("JWT_SECRET_KEY", None)
+        or config_getter("SECRET_KEY"),
+        digest_method=config_getter("AUTH_SIGNATURE_ALGORITHM", hashlib.sha256),
+    )
+    cookie_handler = CookieHandler(
+        signer,
+        config_getter("AUTH_COOKIE", "session_uuid"),
+    )
+    token_store = RedisStore.from_url(
+        config_getter("AUTH_REDIS_URL"),
+        config_getter("AUTH_REDIS_CLIENT_CLASS", redis.Redis),
+    )
+    middleware = AuthMiddleware(
+        cookie_handler,
+        token_store,
+        config_getter("JWT_HEADER_TYPE", "Bearer"),
+        token_refresher,
+    )
+    return middleware
+
+
+def from_dict(config):
+    """Construct a middleware object using a config dictionary."""
+    no_default = object()
+
+    def _getter(key, default=no_default):
+        return config[key] if default == no_default else config.get(key, default)
+
+    return from_config(_getter)
