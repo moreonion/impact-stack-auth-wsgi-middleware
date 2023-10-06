@@ -54,7 +54,7 @@ def fixture_auth_middleware(app, jwt):
         flask_jwt_extended.create_access_token("user1", expires_delta=expire_in),
         ex=expire_in,
     )
-    middleware.wrap(app)
+    app.wsgi_app = middleware.wrap(app.wsgi_app)
     return middleware
 
 

@@ -59,10 +59,9 @@ class CookieHandler:
 class AuthMiddleware:
     """WSGI middleware that turns session cookies into JWT tokens."""
 
-    def wrap(self, app):
+    def wrap(self, wsgi_app):
         """Wrap a Flask app."""
-        self.wsgi_app = app.wsgi_app
-        app.wsgi_app = self
+        self.wsgi_app = wsgi_app
         return self
 
     def __init__(self, cookie_handler, token_store, header_type, token_refresher):
