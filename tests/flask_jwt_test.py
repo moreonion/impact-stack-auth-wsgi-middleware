@@ -30,6 +30,7 @@ def fixture_app(jwt):
     app.config["AUTH_REDIS_URL"] = "redis://localhost:6379/0"
     app.config["AUTH_REDIS_CLIENT_CLASS"] = fakeredis.FakeStrictRedis
     app.config["IMPACT_STACK_API_URL"] = "https://impact-stack.net/api"
+    app.config["IMPACT_STACK_API_KEY"] = "api-key"
 
     jwt.init_app(app)
 

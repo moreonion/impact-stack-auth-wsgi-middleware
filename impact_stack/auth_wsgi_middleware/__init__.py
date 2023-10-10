@@ -112,9 +112,7 @@ class RedisStore:
 
 def from_config(config_getter):
     """Construct the middleware and all its dependencies."""
-    auth_client = rest.ClientFactory(config_getter("IMPACT_STACK_API_URL"), None).get_client(
-        "auth", needs_auth=False
-    )
+    auth_client = rest.ClientFactory.from_config(config_getter).get_client("auth")
     token_refresher = TokenRefresher(
         auth_client,
         config_getter("AUTH_MINIMUM_TOKEN_LIFE_TIME", 4 * 3600),
