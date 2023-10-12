@@ -8,9 +8,10 @@ import json
 import fakeredis
 import flask
 import flask_jwt_extended
+import moflask.flask
 import pytest
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware, from_dict
+from impact_stack.auth_wsgi_middleware import AuthMiddleware, from_config
 
 
 @pytest.fixture(name="jwt", scope="class")
@@ -22,7 +23,7 @@ def fixture_jwt():
 @pytest.fixture(name="app", scope="class")
 def fixture_app(jwt):
     """Get the test app for wrapping."""
-    app = flask.Flask(__name__)
+    app = moflask.flask.BaseApp(__name__)
     app.debug = True
     app.config["SECRET_KEY"] = "super-secret"
     app.config["JWT_SECRET_KEY"] = "super-secret"
@@ -47,7 +48,7 @@ def fixture_app(jwt):
 @pytest.fixture(name="auth_middleware", scope="class")
 def fixture_auth_middleware(app, jwt):
     """Initialize the auth middleware."""
-    middleware = from_dict(app.config)
+    middleware = from_config(app.config_getter)
     expire_in = datetime.timedelta(days=1)
     # pylint: disable=protected-access
     middleware.token_store._client.set(
@@ -121,11 +122,11 @@ def test_secret_key_precedence(app):
     """Test precedence of the secret key config variables."""
     del app.config["JWT_SECRET_KEY"]
     app.config["SECRET_KEY"] = "secret-key"
-    assert from_dict(app.config).cookie_handler.signer.secret_keys == [b"secret-key"]
+    assert from_config(app.config_getter).cookie_handler.signer.secret_keys == [b"secret-key"]
     app.config["JWT_SECRET_KEY"] = "jwt-secret-key"
-    assert from_dict(app.config).cookie_handler.signer.secret_keys == [b"jwt-secret-key"]
+    assert from_config(app.config_getter).cookie_handler.signer.secret_keys == [b"jwt-secret-key"]
     app.config["AUTH_SECRET_KEY"] = "auth-secret-key"
-    assert from_dict(app.config).cookie_handler.signer.secret_keys == [b"auth-secret-key"]
+    assert from_config(app.config_getter).cookie_handler.signer.secret_keys == [b"auth-secret-key"]
 
 
 class TokenRefresherTest:

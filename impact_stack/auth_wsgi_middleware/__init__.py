@@ -139,13 +139,3 @@ def from_config(config_getter):
         token_refresher,
     )
     return middleware
-
-
-def from_dict(config):
-    """Construct a middleware object using a config dictionary."""
-    no_default = object()
-
-    def _getter(key, default=no_default):
-        return config[key] if default == no_default else config.get(key, default)
-
-    return from_config(_getter)

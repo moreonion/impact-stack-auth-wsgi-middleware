@@ -19,6 +19,7 @@ dev = [
   "flask",
   "flask-jwt-extended",
   "isort",
+  "moflask",
   "pre-commit",
   "pydocstyle[toml]>=6",
   "pylint",
