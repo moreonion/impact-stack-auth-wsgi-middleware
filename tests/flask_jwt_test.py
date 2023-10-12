@@ -11,7 +11,7 @@ import flask_jwt_extended
 import moflask.flask
 import pytest
 
-from impact_stack.auth_wsgi_middleware import AuthMiddleware, from_config
+from impact_stack.auth_wsgi_middleware import AuthMiddleware, from_config, init_app
 
 
 @pytest.fixture(name="jwt", scope="class")
@@ -48,7 +48,7 @@ def fixture_app(jwt):
 @pytest.fixture(name="auth_middleware", scope="class")
 def fixture_auth_middleware(app, jwt):
     """Initialize the auth middleware."""
-    middleware = from_config(app.config_getter)
+    middleware = init_app(app)
     expire_in = datetime.timedelta(days=1)
     # pylint: disable=protected-access
     middleware.token_store._client.set(
@@ -56,7 +56,6 @@ def fixture_auth_middleware(app, jwt):
         flask_jwt_extended.create_access_token("user1", expires_delta=expire_in),
         ex=expire_in,
     )
-    app.wsgi_app = middleware.wrap(app.wsgi_app)
     return middleware
 
 

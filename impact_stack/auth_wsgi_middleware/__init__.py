@@ -139,3 +139,10 @@ def from_config(config_getter):
         token_refresher,
     )
     return middleware
+
+
+def init_app(app):
+    """Configure the middleware using a flask-app and use it to wrap the wsgi_app."""
+    middleware = from_config(app.config_getter)
+    app.wsgi_app = middleware.wrap(app.wsgi_app)
+    return middleware
