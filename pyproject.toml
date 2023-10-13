@@ -25,6 +25,7 @@ dev = [
   "pytest",
   "pytest-cov",
   "requests-mock",
+  "twine",
 ]
 
 [build-system]
