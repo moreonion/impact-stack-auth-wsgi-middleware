@@ -8,7 +8,6 @@ import json
 import fakeredis
 import flask
 import flask_jwt_extended
-import moflask.flask
 import pytest
 
 from impact_stack.auth_wsgi_middleware import AuthMiddleware, from_config, init_app
@@ -23,7 +22,7 @@ def fixture_jwt():
 @pytest.fixture(name="app", scope="class")
 def fixture_app(jwt):
     """Get the test app for wrapping."""
-    app = moflask.flask.BaseApp(__name__)
+    app = flask.Flask(__name__)
     app.debug = True
     app.config["SECRET_KEY"] = "super-secret"
     app.config["JWT_SECRET_KEY"] = "super-secret"
@@ -32,6 +31,8 @@ def fixture_app(jwt):
     app.config["AUTH_REDIS_CLIENT_CLASS"] = fakeredis.FakeStrictRedis
     app.config["IMPACT_STACK_API_URL"] = "https://impact-stack.net/api"
     app.config["IMPACT_STACK_API_KEY"] = "api-key"
+    # Provide a simple config_getter for tests. moflask.flask.BaseApp providers a better one.
+    app.config_getter = app.config.get
 
     jwt.init_app(app)
 
