@@ -1,6 +1,6 @@
 """Test the middleware by wrapping a Flask app that accepts JWT tokens."""
 
-# pylint: disable=unused-argument,too-few-public-methods
+# pylint: disable=unused-argument
 
 import datetime
 import json
@@ -127,13 +127,3 @@ def test_secret_key_precedence(app):
     assert from_config(app.config_getter).cookie_handler.signer.secret_keys == [b"jwt-secret-key"]
     app.config["AUTH_SECRET_KEY"] = "auth-secret-key"
     assert from_config(app.config_getter).cookie_handler.signer.secret_keys == [b"auth-secret-key"]
-
-
-class TokenRefresherTest:
-    """Test the token refresher."""
-
-    def test_exclude_path(self, auth_middleware: AuthMiddleware):
-        """Test that no token request is triggered on excluded paths."""
-        # Emulate gunicorns behavior.
-        environ = {"SCRIPT_NAME": "/api/auth", "PATH_INFO": "/v1/refresh"}
-        assert auth_middleware.token_refresher(0, environ) is None

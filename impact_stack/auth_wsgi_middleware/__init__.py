@@ -16,17 +16,14 @@ class TokenRefresher:
 
     # pylint: disable=too-few-public-methods
 
-    def __init__(self, auth_client, minimum_life_time, exclude_paths) -> None:
+    def __init__(self, auth_client, minimum_life_time) -> None:
         """Create a new token refresher."""
         self.auth_client = auth_client
         self.minimum_life_time = minimum_life_time
-        self.exclude_paths = exclude_paths
 
     def __call__(self, ttl: int, environ) -> Optional[str]:
         """Refresh the token when needed."""
         if ttl >= self.minimum_life_time:
-            return None
-        if environ["SCRIPT_NAME"] + environ["PATH_INFO"] in self.exclude_paths:
             return None
         response = self.auth_client.post(
             "refresh", headers={"Authorization": environ["HTTP_AUTHORIZATION"]}
@@ -116,7 +113,6 @@ def from_config(config_getter):
     token_refresher = TokenRefresher(
         auth_client,
         config_getter("AUTH_MINIMUM_TOKEN_LIFE_TIME", 4 * 3600),
-        config_getter("AUTH_REFRESH_EXCLUDE_PATHS", ["/api/auth/v1/refresh"]),
     )
     signer = itsdangerous.Signer(
         config_getter("AUTH_SECRET_KEY", None)
