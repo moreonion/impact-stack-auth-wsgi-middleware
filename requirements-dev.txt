@@ -4,13 +4,13 @@
 #
 #    pip-compile --extra=dev --output-file=requirements-dev.txt pyproject.toml
 #
-astroid==2.15.6
+astroid==3.0.1
     # via pylint
 async-timeout==4.0.3
     # via redis
-black==23.9.1
+black==23.10.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-blinker==1.6.2
+blinker==1.6.3
     # via flask
 certifi==2023.7.22
     # via requests
@@ -24,7 +24,7 @@ click==8.1.7
     # via
     #   black
     #   flask
-coverage[toml]==7.3.1
+coverage[toml]==7.3.2
     # via pytest-cov
 cryptography==41.0.4
     # via secretstorage
@@ -36,21 +36,21 @@ docutils==0.20.1
     # via readme-renderer
 exceptiongroup==1.1.3
     # via pytest
-fakeredis==2.18.1
+fakeredis==2.19.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 filelock==3.12.4
     # via virtualenv
-flask==2.3.3
+flask==3.0.0
     # via
     #   flask-jwt-extended
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
-flask-jwt-extended==4.5.2
+flask-jwt-extended==4.5.3
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
-identify==2.5.29
+identify==2.5.30
     # via pre-commit
 idna==3.4
     # via requests
-impact-stack-rest==0.2.0
+impact-stack-rest==0.2.1
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 importlib-metadata==6.8.0
     # via
@@ -77,8 +77,6 @@ jinja2==3.1.2
     # via flask
 keyring==24.2.0
     # via twine
-lazy-object-proxy==1.9.0
-    # via astroid
 markdown-it-py==3.0.0
     # via rich
 markupsafe==2.1.3
@@ -97,7 +95,7 @@ nh3==0.2.14
     # via readme-renderer
 nodeenv==1.8.0
     # via pre-commit
-packaging==23.1
+packaging==23.2
     # via
     #   black
     #   pytest
@@ -105,14 +103,14 @@ pathspec==0.11.2
     # via black
 pkginfo==1.9.6
     # via twine
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via
     #   black
     #   pylint
     #   virtualenv
 pluggy==1.3.0
     # via pytest
-pre-commit==3.4.0
+pre-commit==3.5.0
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 pycparser==2.21
     # via cffi
@@ -124,7 +122,7 @@ pygments==2.16.1
     #   rich
 pyjwt==2.8.0
     # via flask-jwt-extended
-pylint==2.17.5
+pylint==3.0.1
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 pytest==7.4.2
     # via
@@ -136,7 +134,7 @@ pyyaml==6.0.1
     # via pre-commit
 readme-renderer==42.0
     # via twine
-redis==5.0.0
+redis==5.0.1
     # via
     #   fakeredis
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
@@ -178,19 +176,17 @@ typing-extensions==4.8.0
     #   astroid
     #   black
     #   pylint
-urllib3==2.0.6
+urllib3==2.0.7
     # via
     #   requests
     #   twine
 virtualenv==20.24.5
     # via pre-commit
-werkzeug==2.3.7
+werkzeug==3.0.0
     # via
     #   flask
     #   flask-jwt-extended
     #   impact-stack-auth-wsgi-middleware (pyproject.toml)
-wrapt==1.15.0
-    # via astroid
 zipp==3.17.0
     # via importlib-metadata
 
