@@ -50,7 +50,7 @@ identify==2.5.30
     # via pre-commit
 idna==3.4
     # via requests
-impact-stack-rest==0.2.1
+impact-stack-rest==0.2.2
     # via impact-stack-auth-wsgi-middleware (pyproject.toml)
 importlib-metadata==6.8.0
     # via
