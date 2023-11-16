@@ -12,6 +12,9 @@ authors = [
 ]
 readme = "README.md"
 
+[project.urls]
+"Homepage" = "https://github.com/moreonion/impact-stack-auth-wsgi-middleware"
+
 [project.optional-dependencies]
 dev = [
   "black",
