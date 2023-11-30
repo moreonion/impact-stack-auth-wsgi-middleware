@@ -1,7 +1,0 @@
-include:
-  - project: 'devops/ci-templates'
-    file: '/templates/python-postgres-app.yml'
-    ref: 2.1.1
-
-test:deb11:
-  services: []
